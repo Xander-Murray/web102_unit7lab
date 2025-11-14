@@ -1,32 +1,40 @@
-import { useState, useEffect } from 'react'
-import Card from '../components/Card'
+import { useState, useEffect } from "react";
+import Card from "../components/Card";
+import { supabase } from "../client";
 
 const ReadPosts = (props) => {
+  const [posts, setPosts] = useState([]);
 
-    const [posts, setPosts] = useState([])
+  useEffect(() => {
+    const fetchPost = async () => {
+      const { data } = await supabase.from("Posts").select();
 
-    useEffect(() => {
-        setPosts(props.data)
-    }, [props])
-    
-    return (
-        <div className="ReadPosts">
-            {
-                posts && posts.length > 0 ?
-                [...posts]
-                .sort((a, b) => a.id - b.id)
-                .map((post,index) => 
-                    <Card 
-                        key={post.id}
-                        id={post.id} 
-                        title={post.title}
-                        author={post.author}
-                        description={post.description}
-                    />
-                ) : <h2>{'No Challenges Yet 😞'}</h2>
-            }
-        </div>  
-    )
-}
+      setPosts(data);
+    };
+    fetchPost();
+  }, [props]);
 
-export default ReadPosts
+  return (
+    <div className="ReadPosts">
+      {posts && posts.length > 0 ? (
+        [...posts]
+          .sort((a, b) => a.id - b.id)
+          .map((post, index) => (
+            <Card
+              key={post.id}
+              id={post.id}
+              title={post.title}
+              author={post.author}
+              description={post.description}
+              betCount={post.betCount}
+            />
+          ))
+      ) : (
+        <h2>{"No Challenges Yet 😞"}</h2>
+      )}
+    </div>
+  );
+};
+
+export default ReadPosts;
+
